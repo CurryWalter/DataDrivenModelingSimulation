@@ -28,18 +28,36 @@ def tracing(start):
 
 def get_scenarios():
     """Define scenarios"""
+    baseline = []
     scenario_1 = []
     scenario_2 = []
-    scenario_3 = []
+    scenario_3 = = [
+    cv.change_beta(days=[15, 60], changes=[0.5, 1.0], layers='s'),
+    cv.change_beta(days=[15, 60], changes=[0.5, 1.0], layers='w'),
+    cv.change_beta(days=[15, 60], changes=[0.6, 1.0], layers='c'),
+    cv.test_prob(
+        start_day=15,
+        symp_prob=0.15,
+        asymp_prob=0.01,
+        symp_quar_prob=0.8,
+        asymp_quar_prob=0.5,
+        test_delay=1,
+    ),
+    cv.contact_tracing(
+        start_day=15,
+        trace_probs={'h': 1.0, 's': 0.5, 'w': 0.4, 'c': 0.2},
+        trace_time=1,
+    ),
+]
     scenario_4 = [testing(20), tracing(20)]
-    scenario_5 = [testing(50), tracing(50)]
+    scenario_5 = []
     
     return {
         'Scenario 1': scenario_1,
         'Scenario 2': scenario_2,
-        'Scenario 3': scenario_3,
+        'Premature Reopening': scenario_3,
         'testing & tracing from day 20': scenario_4,
-        'testing & tracing from day 50': scenario_5,
+        'Scenario 5: scenario_5,
     }
 
 
