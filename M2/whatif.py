@@ -31,7 +31,7 @@ def get_scenarios():
     baseline = []
     scenario_1 = []
     scenario_2 = []
-    scenario_3 = = [
+    scenario_3 = [
     cv.change_beta(days=[15, 60], changes=[0.5, 1.0], layers='s'),
     cv.change_beta(days=[15, 60], changes=[0.5, 1.0], layers='w'),
     cv.change_beta(days=[15, 60], changes=[0.6, 1.0], layers='c'),
