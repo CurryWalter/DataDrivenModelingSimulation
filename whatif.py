@@ -16,21 +16,30 @@ base_pars = dict(
     verbose=0,
 )
 
+def testing(start):
+        return cv.test_prob(symp_prob=0.2, asymp_prob=0.001,
+                            symp_quar_prob=0.99, start_day=start, test_delay=1)
+
+def tracing(start):
+    return cv.contact_tracing(trace_probs=dict(h=1.0, s=0.5, w=0.5, c=0.2),
+                                trace_time=dict(h=0, s=2, w=2, c=5),
+                                start_day=start)
+
 
 def get_scenarios():
     """Define scenarios"""
     scenario_1 = []
     scenario_2 = []
     scenario_3 = []
-    scenario_4 = []
-    scenario_5 = []
+    scenario_4 = [testing(20), tracing(20)]
+    scenario_5 = [testing(50), tracing(50)]
     
     return {
         'Scenario 1': scenario_1,
         'Scenario 2': scenario_2,
         'Scenario 3': scenario_3,
-        'Scenario 4': scenario_4,
-        'Scenario 5': scenario_5,
+        'testing & tracing from day 20': scenario_4,
+        'testing & tracing from day 50': scenario_5,
     }
 
 
