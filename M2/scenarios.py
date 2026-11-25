@@ -7,22 +7,31 @@ SCHOOL = 's'
 WORK   = 'w'
 # the original edge clipping intervention does not allow for age-based edge clipping,
 # this intervention takes in a child age range and an adult age range and pops edges for those age groups on specified weekdays
+# the implementation is similar to the example of protect the elderly in the tutorial
+import numpy as np
+import covasim as cv
+import datetime as dt
+
+SCHOOL = 's'
+WORK   = 'w'
+# the original edge clipping intervention does not allow for age-based edge clipping,
+# this intervention takes in a child age range and an adult age range and pops edges for those age groups on specified weekdays
 class age_based_edge_clipping(cv.Intervention):
     
     def __init__(self, child_home_weekdays=(), adult_home_weekdays=(),
                  start_day=None, end_day=None,
                  child_age_range=(5, 17), adult_age_range=(18, 55),
-                 layers=(SCHOOL, WORK), **kwargs):
+                  **kwargs):
         super().__init__(**kwargs)
-        self.child_home_weekdays = set(child_home_weekdays)   
-        self.adult_home_weekdays = set(adult_home_weekdays)  
+        self.child_home_weekdays = child_home_weekdays   
+        self.adult_home_weekdays = adult_home_weekdays
         self.start_day           = start_day
         self.end_day             = end_day
         self.child_age_range     = child_age_range
         self.adult_age_range     = adult_age_range
-        self.layers              = layers
-        self.popped_edges        = {layer: [] for layer in layers}
-        self.is_popped           = {layer: False for layer in layers}
+        self.layers              = (SCHOOL, WORK)
+        self.popped_edges        = {layer: [] for layer in (SCHOOL, WORK)}
+        self.is_popped           = {layer: False for layer in (SCHOOL, WORK)}
 
 
     def initialize(self, sim):
@@ -41,23 +50,19 @@ class age_based_edge_clipping(cv.Intervention):
 
         for t in range(sim.npts):
             if self.start_ti <= t <= self.end_ti:
-                wd = (self._start_date + dt.timedelta(days=t)).weekday()
-                self.child_home_by_day[t] = wd in self.child_home_weekdays
-                self.adult_home_by_day[t] = wd in self.adult_home_weekdays
+                weekday_t = (self._start_date + dt.timedelta(days=t)).weekday()
+                self.child_home_by_day[t] = weekday_t in self.child_home_weekdays
+                self.adult_home_by_day[t] = weekday_t in self.adult_home_weekdays
 
     def apply(self, sim):
-        self._step(sim, self.child_home_by_day, self.child_age_range, layer=SCHOOL)
-        self._step(sim, self.adult_home_by_day, self.adult_age_range, layer=WORK)
+        self._clip(sim, self.child_home_by_day, self.child_age_range, layer=SCHOOL)
+        self._clip(sim, self.adult_home_by_day, self.adult_age_range, layer=WORK)
 
     #similar to the edge clipping intervention step function but instead of maintaining an original edge list,
     #we maintain a list of popped edges for each layer and restore them when the intervention is over
-    def _step(self, sim, home_by_day, age_range, layer):
-        if layer not in sim.people.contacts:
-            return
-
+    # unlike the original edge clipping function, we do not need to do the math for which edges to keep
+    def _clip(self, sim, home_by_day, age_range, layer):
         t = sim.ti
-        if t >= len(home_by_day):
-            return
 
         should_be_home = home_by_day[t]
 
@@ -84,12 +89,7 @@ class age_based_edge_clipping(cv.Intervention):
         if len(target_indices) == 0:
             return
 
-        n_remove = len(target_indices) 
-        if n_remove == 0:
-            return
-
-        remove_indices = np.random.choice(target_indices, size=n_remove, replace=False)
-        self.popped_edges[layer].append(network_layer.pop_inds(remove_indices))
+        self.popped_edges[layer].append(network_layer.pop_inds(target_indices))
 
 
     def _restore_edges(self, sim, layer):
@@ -99,8 +99,7 @@ class age_based_edge_clipping(cv.Intervention):
         while self.popped_edges[layer]:
             popped = self.popped_edges[layer].pop()
 
-            keep = alive[popped['p1']] & alive[popped['p2']]            
-
+            keep = alive[popped['p1']] & alive[popped['p2']]    
             if keep.any():
                 filtered = {k: v[keep] for k, v in popped.items()}
                 network_layer.append(filtered)
@@ -113,12 +112,10 @@ class age_based_edge_clipping(cv.Intervention):
 AGE_BASED_SOCIAL_DISTANCING = age_based_edge_clipping(
     child_home_weekdays={0,2,4},          
     adult_home_weekdays={1,3},    
-    start_day='2020-03-02',            
-    end_day='2020-06-01',
+    start_day='2020-03-01',            
+    end_day='2021-03-01',
     child_age_range=(5, 17),
     adult_age_range=(18, 55),
-   
-    layers=(SCHOOL, WORK),
 )
 
 VACCINATION = cv.simple_vaccine(days=[150, 171], prob=0.75, rel_sus=0.5, rel_symp=0.5)
