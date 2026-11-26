@@ -48,7 +48,7 @@ class age_based_edge_clipping(cv.Intervention):
     #we maintain a list of popped edges for each layer and restore them when the intervention is over
     # unlike the original edge clipping function, we do not need to do the math for which edges to keep
     def _clip(self, sim, home_by_day, age_range, layer):
-        t = sim.ti
+        t = sim.t
 
         should_be_home = home_by_day[t]
 
@@ -61,9 +61,9 @@ class age_based_edge_clipping(cv.Intervention):
 
     def _pop_age_group(self, sim, age_range, layer):
         network_layer   = sim.people.contacts[layer]
-        person1, person2 = network_layer.p1, network_layer.p2
+        person1, person2 = network_layer['p1'], network_layer['p2']
         ages  = sim.people.age
-        alive = sim.people.alive.raw          
+        alive = ~sim.people.dead          
 
         age_mask = ((ages[person1] >= age_range[0]) & (ages[person1] <= age_range[1])) | \
                 ((ages[person2] >= age_range[0]) & (ages[person2] <= age_range[1]))
@@ -78,8 +78,7 @@ class age_based_edge_clipping(cv.Intervention):
 
     def _restore_edges(self, sim, layer):
         network_layer   = sim.people.contacts[layer]
-        alive = sim.people.alive.raw
-
+        alive = ~sim.people.dead 
         while self.popped_edges[layer]:
             popped = self.popped_edges[layer].pop()
 
@@ -101,7 +100,7 @@ strategy = [{'age':(5,10),'home_weekdays': {0,2,4}, 'layer': SCHOOL},
 
 AGE_BASED_SOCIAL_DISTANCING = age_based_edge_clipping(
    ranges=strategy,
-    start_day='2020-03-01',            
+    start_day='2020-03-01',             
     end_day='2021-03-01',
 )
 
