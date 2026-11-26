@@ -134,15 +134,38 @@ def tracing(start):
                                 trace_time=dict(h=0, s=2, w=2, c=5),
                                 start_day=start)
 
+# What if vaccinations are prioritized for schoolkids and the elderly
+def vaccinate_by_age(sim):
+    young  = cv.true(sim.people.age < 19) # cv.true() returns indices of people matching this condition
+    middle = cv.true((sim.people.age >= 19) * (sim.people.age < 75)) # Multiplication means "and" here
+    old    = cv.true(sim.people.age >= 75)
+    
+    # Combine agent UIDs
+    inds = np.concatenate([young, middle, old])
+
+    # Assign vaccination probabilities
+    vals = np.concatenate([
+        np.full(len(young), 0.9),   # 90% for under 19
+        np.full(len(middle), 0.5),  # 50% for 19-74
+        np.full(len(old), 0.9)      # 90% for 75+
+    ])
+    output = dict(inds=inds, vals=vals)
+    return output
+
+
+# same vaccination as the simple Vaccination. Without ensuring if the total probability dismissing the targets adds up to the probability of 75% as in the simple vaccination
+VACCINATION_BY_AGEGROUP = cv.simple_vaccine(days=[150,171], rel_sus=0.5, rel_symp=0.5, subtarget=vaccinate_by_age) 
+
+
 
 def get_scenarios():
     """Define scenarios"""
     baseline = []
     scenario_1 = [] #AGE_BASED_SOCIAL_DISTANCING
-    scenario_2 = []
-    scenario_3 = PREMATURE_OPENING
-    scenario_4 = [testing(20), tracing(20)]
-    scenario_5 = [VACCINATION]
+    scenario_2 = [VACCINATION_BY_AGEGROUP]
+    scenario_3 = [] #PREMATURE_OPENING
+    scenario_4 = [] #[testing(20), tracing(20)]
+    scenario_5 = [] #[VACCINATION]
     
     return {
         'Age Based Social Distancing': scenario_1,
