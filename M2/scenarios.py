@@ -48,7 +48,7 @@ class age_based_edge_clipping(cv.Intervention):
     #we maintain a list of popped edges for each layer and restore them when the intervention is over
     # unlike the original edge clipping function, we do not need to do the math for which edges to keep
     def _clip(self, sim, home_by_day, age_range, layer):
-        t = sim.t
+        t = sim.ti
 
         should_be_home = home_by_day[t]
 
