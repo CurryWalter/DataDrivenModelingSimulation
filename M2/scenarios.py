@@ -146,8 +146,8 @@ def vaccinate_by_age(sim):
     # Assign vaccination probabilities
     vals = np.concatenate([
         np.full(len(young), 0.9),   # 90% for under 19
-        np.full(len(middle), 0.5),  # 50% for 19-74
-        np.full(len(old), 0.9)      # 90% for 75+
+        np.full(len(middle), 0.1),  # 50% for 19-74
+        np.full(len(old), 0.1)      # 90% for 75+
     ])
     output = dict(inds=inds, vals=vals)
     return output
