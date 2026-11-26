@@ -104,7 +104,7 @@ AGE_BASED_SOCIAL_DISTANCING = age_based_edge_clipping(
     end_day='2021-03-01',
 )
 
-VACCINATION = cv.simple_vaccine(days=[150, 171], prob=0.75, rel_sus=0.5, rel_symp=0.5)
+VACCINATION = cv.simple_vaccine(days=[50, 71], prob=0.75, rel_sus=0.5, rel_symp=0.5)
 
 PREMATURE_OPENING = [
     cv.change_beta(days=[15, 60], changes=[0.5, 1.0], layers='s'),
