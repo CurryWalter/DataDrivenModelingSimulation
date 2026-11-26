@@ -154,7 +154,7 @@ def vaccinate_by_age(sim):
 
 
 # same vaccination as the simple Vaccination. Without ensuring if the total probability dismissing the targets adds up to the probability of 75% as in the simple vaccination
-VACCINATION_BY_AGEGROUP = cv.simple_vaccine(days=[150,171], rel_sus=0.5, rel_symp=0.5, subtarget=vaccinate_by_age) 
+VACCINATION_BY_AGEGROUP = cv.simple_vaccine(days=[150,171], rel_sus=0.5, rel_symp=0.5, prob=0.75) #subtarget=vaccinate_by_age) 
 
 
 
