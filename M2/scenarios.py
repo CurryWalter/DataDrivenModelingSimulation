@@ -154,14 +154,14 @@ def vaccinate_by_age(sim):
 
 
 # same vaccination as the simple Vaccination. Without ensuring if the total probability dismissing the targets adds up to the probability of 75% as in the simple vaccination
-VACCINATION_BY_AGEGROUP = cv.simple_vaccine(days=[150,171], rel_sus=0.5, rel_symp=0.5, prob=0.75) #subtarget=vaccinate_by_age)
+VACCINATION_BY_AGEGROUP = cv.simple_vaccine(days=[150,171], rel_sus=0.5, rel_symp=0.5, subtarget=vaccinate_by_age)
 
 
 def get_scenarios():
     """Define scenarios"""
     baseline = []
     scenario_1 = [] #AGE_BASED_SOCIAL_DISTANCING
-    scenario_2 = PREMATURE_OPENING #[VACCINATION_BY_AGEGROUP]
+    scenario_2 = VACCINATION_BY_AGEGROUP
     scenario_3 = PREMATURE_OPENING
     scenario_4 = [testing(20), tracing(20)]
     scenario_5 = [VACCINATION]
