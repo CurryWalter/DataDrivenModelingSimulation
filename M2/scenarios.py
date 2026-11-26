@@ -165,7 +165,7 @@ def get_scenarios():
     scenario_2 = [VACCINATION_BY_AGEGROUP]
     scenario_3 = [] #PREMATURE_OPENING
     scenario_4 = [] #[testing(20), tracing(20)]
-    scenario_5 = [] #[VACCINATION]
+    scenario_5 = [VACCINATION]
     
     return {
         'Age Based Social Distancing': scenario_1,
