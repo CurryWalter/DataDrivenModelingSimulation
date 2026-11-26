@@ -160,7 +160,7 @@ VACCINATION_BY_AGEGROUP = cv.simple_vaccine(days=[150,171], rel_sus=0.5, rel_sym
 def get_scenarios():
     """Define scenarios"""
     baseline = []
-    scenario_1 = [] #AGE_BASED_SOCIAL_DISTANCING]
+    scenario_1 = [] #AGE_BASED_SOCIAL_DISTANCING
     scenario_2 = [VACCINATION] #[VACCINATION_BY_AGEGROUP]
     scenario_3 = PREMATURE_OPENING
     scenario_4 = [testing(20), tracing(20)]
@@ -168,7 +168,7 @@ def get_scenarios():
     
     return {
         'Age Based Social Distancing': scenario_1,
-        'Scenario 2': scenario_2,
+        'Vaccination with Prioritzed Agegroups': scenario_2,
         'Premature Reopening': scenario_3,
         'testing & tracing from day 20': scenario_4,
         'Vaccination from day 150': scenario_5,
