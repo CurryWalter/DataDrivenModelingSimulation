@@ -48,7 +48,7 @@ class age_based_edge_clipping(cv.Intervention):
     #we maintain a list of popped edges for each layer and restore them when the intervention is over
     # unlike the original edge clipping function, we do not need to do the math for which edges to keep
     def _clip(self, sim, home_by_day, age_range, layer):
-        t = sim.t
+        t = sim.ti
 
         should_be_home = home_by_day[t]
 
@@ -63,7 +63,7 @@ class age_based_edge_clipping(cv.Intervention):
         network_layer   = sim.people.contacts[layer]
         person1, person2 = network_layer['p1'], network_layer['p2']
         ages  = sim.people.age
-        alive = ~sim.people.dead          
+        alive = sim.people.alive.raw          
 
         age_mask = ((ages[person1] >= age_range[0]) & (ages[person1] <= age_range[1])) | \
                 ((ages[person2] >= age_range[0]) & (ages[person2] <= age_range[1]))
@@ -78,7 +78,7 @@ class age_based_edge_clipping(cv.Intervention):
 
     def _restore_edges(self, sim, layer):
         network_layer   = sim.people.contacts[layer]
-        alive = ~sim.people.dead 
+        alive = sim.people.alive.raw          
         while self.popped_edges[layer]:
             popped = self.popped_edges[layer].pop()
 
@@ -93,10 +93,10 @@ class age_based_edge_clipping(cv.Intervention):
         return
 
 strategy = [{'age':(5,10),'home_weekdays': {0,2,4}, 'layer': SCHOOL},
-              {'age':(11,17),'home_weekdays': {1,3,4}, 'layer': SCHOOL},
-               {'age':(18,30),'home_weekdays': {0,2,4}, 'layer': WORK},
-              {'age':(31,55),'home_weekdays': {1,3}, 'layer': WORK},
-              ]
+            {'age':(11,17),'home_weekdays': {1,3,4}, 'layer': SCHOOL},
+            {'age':(18,30),'home_weekdays': {0,2,4}, 'layer': WORK},
+            {'age':(31,55),'home_weekdays': {1,3}, 'layer': WORK},
+            ]
 
 AGE_BASED_SOCIAL_DISTANCING = age_based_edge_clipping(
    ranges=strategy,
@@ -160,16 +160,18 @@ VACCINATION_BY_AGEGROUP = cv.simple_vaccine(days=[50,71], rel_sus=0.5, rel_symp=
 def get_scenarios():
     """Define scenarios"""
     baseline = []
-    scenario_1 = [] #AGE_BASED_SOCIAL_DISTANCING
-    scenario_2 = VACCINATION_BY_AGEGROUP
-    scenario_3 = PREMATURE_OPENING
-    scenario_4 = [testing(20), tracing(20)]
-    scenario_5 = VACCINATION
+    scenario_1 = AGE_BASED_SOCIAL_DISTANCING
+    scenario_2 = PREMATURE_OPENING
+    scenario_3 = [testing(20), tracing(20)]
+    scenario_4 = VACCINATION
+    scenario_5 = VACCINATION_BY_AGEGROUP
+
     
     return {
+        'Baseline': baseline,
         'Age Based Social Distancing': scenario_1,
-        'Vaccination with Prioritzed Agegroups': scenario_2,
-        'Premature Reopening': scenario_3,
-        'testing & tracing from day 20': scenario_4,
-        'Vaccination from day 150': scenario_5,
+        'Premature Reopening': scenario_2,
+        'testing & tracing from day 20': scenario_3,
+        'Vaccination from day 150': scenario_4,
+        'Vaccination with Prioritzed Agegroups': scenario_5,
     }
