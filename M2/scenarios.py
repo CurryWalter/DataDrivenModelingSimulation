@@ -138,10 +138,10 @@ def tracing(start):
 def get_scenarios():
     """Define scenarios"""
     baseline = []
-    scenario_1 = AGE_BASED_SOCIAL_DISTANCING
+    scenario_1 = [] #AGE_BASED_SOCIAL_DISTANCING
     scenario_2 = []
-    scenario_3 = PREMATURE_OPENING
-    scenario_4 = [testing(20), tracing(20)]
+    scenario_3 = [] #PREMATURE_OPENING
+    scenario_4 = [] #[testing(20), tracing(20)]
     scenario_5 = [VACCINATION]
     
     return {
